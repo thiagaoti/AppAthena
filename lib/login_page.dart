@@ -19,6 +19,11 @@ class TelaLogin extends StatefulWidget {
 }
 
 class _TelaLoginState extends State<TelaLogin> {
+  static const _chaveEmail = 'email_athena';
+  static const _chaveSenha = 'senha_athena';
+  static const _chaveBiometriaAtiva = 'biometria_athena_ativa';
+  static const _chaveBiometriaConfigurada = 'biometria_athena_configurada';
+
   final _email = TextEditingController();
   final _senha = TextEditingController();
   final LocalAuthentication _auth = LocalAuthentication();
@@ -37,8 +42,12 @@ class _TelaLoginState extends State<TelaLogin> {
   }
 
   Future<void> _verificarSePodeUsarBiometria() async {
-    final emailSalvo = await _storage.read(key: 'email_athena');
-    if (emailSalvo != null) {
+    final biometriaAtiva =
+        await _storage.read(key: _chaveBiometriaAtiva) == 'true';
+    final emailSalvo = await _storage.read(key: _chaveEmail);
+    final senhaSalva = await _storage.read(key: _chaveSenha);
+
+    if (biometriaAtiva && emailSalvo != null && senhaSalva != null) {
       if (mounted) setState(() => _temBiometriaSalva = true);
       _loginComDigital();
     }
@@ -61,8 +70,8 @@ class _TelaLoginState extends State<TelaLogin> {
 
       if (!autenticado) return;
 
-      final email = await _storage.read(key: 'email_athena');
-      final senha = await _storage.read(key: 'senha_athena');
+      final email = await _storage.read(key: _chaveEmail);
+      final senha = await _storage.read(key: _chaveSenha);
       if (email != null && senha != null) {
         _email.text = email;
         _senha.text = senha;
@@ -111,7 +120,9 @@ class _TelaLoginState extends State<TelaLogin> {
         return;
       }
 
-      if (!_temBiometriaSalva) {
+      final biometriaConfigurada =
+          await _storage.read(key: _chaveBiometriaConfigurada) == 'true';
+      if (!biometriaConfigurada) {
         _perguntarSobreBiometria(_email.text.trim(), _senha.text, sessao);
         return;
       }
@@ -264,6 +275,9 @@ class _TelaLoginState extends State<TelaLogin> {
         actions: [
           TextButton(
             onPressed: () {
+              _storage.write(key: _chaveBiometriaConfigurada, value: 'true');
+              _storage.write(key: _chaveBiometriaAtiva, value: 'false');
+              if (mounted) setState(() => _temBiometriaSalva = false);
               Navigator.pop(ctx);
               _concluirLogin(sessao);
             },
@@ -271,8 +285,10 @@ class _TelaLoginState extends State<TelaLogin> {
           ),
           TextButton(
             onPressed: () async {
-              await _storage.write(key: 'email_athena', value: email);
-              await _storage.write(key: 'senha_athena', value: senha);
+              await _storage.write(key: _chaveEmail, value: email);
+              await _storage.write(key: _chaveSenha, value: senha);
+              await _storage.write(key: _chaveBiometriaConfigurada, value: 'true');
+              await _storage.write(key: _chaveBiometriaAtiva, value: 'true');
               if (mounted) setState(() => _temBiometriaSalva = true);
               Navigator.pop(ctx);
               await _concluirLogin(sessao);
