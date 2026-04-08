@@ -83,7 +83,12 @@ class _SeletorContextoSheet extends StatelessWidget {
                       titulo: contextoAtual.rotuloPerfil,
                       subtitulo: contextoAtual.resumoPlataformas,
                       atual: true,
-                      onTap: null,
+                      onTap: () {
+                        Navigator.pop(
+                          context,
+                          sessao.comContextoSelecionado(contextoAtual),
+                        );
+                      },
                     ),
                     const SizedBox(height: 18),
                   ],

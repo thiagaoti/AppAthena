@@ -26,6 +26,7 @@ class _TelaLoginState extends State<TelaLogin> {
 
   bool _loading = false;
   bool _temBiometriaSalva = false;
+  bool _mostrarSenha = false;
 
   @override
   void initState() {
@@ -80,10 +81,8 @@ class _TelaLoginState extends State<TelaLogin> {
         Uri.parse('http://177.69.57.196:8083/api/Usuario/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'email': _email.text.isEmpty
-              ? 'tsantos@athenabanco.com.br'
-              : _email.text.trim(),
-          'senha': _senha.text.isEmpty ? 'Athena@1234' : _senha.text,
+          'email': _email.text.trim(),
+          'senha': _senha.text,
         }),
       );
 
@@ -346,10 +345,22 @@ class _TelaLoginState extends State<TelaLogin> {
               const SizedBox(height: 20),
               TextField(
                 controller: _senha,
-                obscureText: true,
-                decoration: const InputDecoration(
+                obscureText: !_mostrarSenha,
+                decoration: InputDecoration(
                   labelText: 'Senha',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _mostrarSenha = !_mostrarSenha;
+                      });
+                    },
+                    icon: Icon(
+                      _mostrarSenha
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),

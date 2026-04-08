@@ -267,28 +267,10 @@ class _DashboardPageState extends State<DashboardPage> {
       );
     }
 
-    final contextoSelecionado = widget.sessao.contextoSelecionado;
-    final String plataformaDoContexto = contextoSelecionado == null
-        ? ''
-        : contextoSelecionado.plataformas
-            .map((item) => item.plataforma.trim())
-            .where((item) => item.isNotEmpty)
-            .firstWhere((_) => true, orElse: () => '');
-
-    final plataformaInicial = plataformaDoContexto.isNotEmpty
-        ? plataformaDoContexto
-        : _plataformaSelecionada;
-
-    final baseDaPlataforma = plataformaInicial == 'TODOS'
-        ? base
-        : base
-            .where((item) => _valorCampo(item, 'plat') == plataformaInicial)
-            .toList(growable: false);
-
-    final gerentes = _listarGerentes(baseDaPlataforma);
-    final gerenteEncontrado = _encontrarGerenteDoContexto(baseDaPlataforma, gerentes);
+    final gerentes = _listarGerentes(base);
+    final gerenteEncontrado = _encontrarGerenteDoContexto(base, gerentes);
     return (
-      plataforma: plataformaInicial,
+      plataforma: 'TODOS',
       gerente: gerenteEncontrado ?? _gerenteSelecionado,
     );
   }

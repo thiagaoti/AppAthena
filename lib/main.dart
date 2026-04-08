@@ -229,9 +229,6 @@ class _MainPageState extends State<MainPage> {
       }).toList(growable: false);
 
       final baseFiltrada = _sessaoAtual.filtrarRegistros(base);
-      final baseDashboard = _sessaoAtual.perfilNormalizado == 'GERENTE'
-          ? base
-          : baseFiltrada;
       final sugestoesFiltradas = _sessaoAtual.filtrarRegistros(sugestoes);
 
       if (!mounted) return;
@@ -243,7 +240,7 @@ class _MainPageState extends State<MainPage> {
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          context.read<DashboardController>().setBase(baseDashboard);
+          context.read<DashboardController>().setBase(baseFiltrada);
         }
       });
     } catch (e) {

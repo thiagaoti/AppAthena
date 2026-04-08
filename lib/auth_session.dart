@@ -24,6 +24,8 @@ class AuthSession {
         .map(UsuarioContextoOperacional.fromJson)
         .where((item) => item.ativo)
         .toList(growable: false);
+    final contextosOrdenados = List<UsuarioContextoOperacional>.from(contextos)
+      ..sort(_compararContextos);
 
     return AuthSession(
       sucesso: json['sucesso'] == true,
@@ -34,7 +36,9 @@ class AuthSession {
       requerSelecaoContexto: json['requerSelecaoContexto'] == true,
       contextosOperacionais: contextos,
       contextoSelecionadoId:
-          contextos.isEmpty ? null : contextos.first.identificador,
+          contextosOrdenados.isEmpty
+              ? null
+              : contextosOrdenados.first.identificador,
     );
   }
 
@@ -71,12 +75,17 @@ class AuthSession {
 
   List<UsuarioContextoOperacional> get contextosOrdenados {
     final lista = List<UsuarioContextoOperacional>.from(contextosOperacionais);
-    lista.sort((a, b) {
-      final ordemPerfil = a.ordemHierarquia.compareTo(b.ordemHierarquia);
-      if (ordemPerfil != 0) return ordemPerfil;
-      return a.rotuloPerfil.compareTo(b.rotuloPerfil);
-    });
+    lista.sort(_compararContextos);
     return lista;
+  }
+
+  static int _compararContextos(
+    UsuarioContextoOperacional a,
+    UsuarioContextoOperacional b,
+  ) {
+    final ordemPerfil = a.ordemHierarquia.compareTo(b.ordemHierarquia);
+    if (ordemPerfil != 0) return ordemPerfil;
+    return a.rotuloPerfil.compareTo(b.rotuloPerfil);
   }
 
   UsuarioContextoOperacional? get contextoSelecionado {
@@ -215,7 +224,6 @@ class AuthSession {
       'codigoErp',
       'codigoERP',
       'codErp',
-      'codGerente',
       'empresa',
     ],
     List<String> chavesPlataforma = const [
@@ -405,15 +413,17 @@ class UsuarioContextoOperacional {
     switch (perfilNormalizado) {
       case 'ADMIN':
         return 0;
-      case 'DIRETOR':
+      case 'PRESIDENCIA':
         return 1;
+      case 'DIRETOR':
+        return 2;
       case 'SUPERITENDE':
       case 'SUPERINTENDENTE':
-        return 2;
-      case 'GERENTE':
         return 3;
-      case 'ASSISTENTE':
+      case 'GERENTE':
         return 4;
+      case 'ASSISTENTE':
+        return 5;
       default:
         return 99;
     }
