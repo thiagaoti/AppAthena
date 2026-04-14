@@ -21,6 +21,7 @@ String fMoeda(double valor) {
 class TelaRelatorio extends StatefulWidget {
   final String nome;
   final AuthSession sessao;
+  final ValueNotifier<DateTime> dataSelecionadaNotifier;
   final Future<void> Function()? aoTrocarPerfil;
   final Function(String cnpj, String nome) aoSelecionarCedente;
 
@@ -28,6 +29,7 @@ class TelaRelatorio extends StatefulWidget {
     super.key,
     required this.nome,
     required this.sessao,
+    required this.dataSelecionadaNotifier,
     this.aoTrocarPerfil,
     required this.aoSelecionarCedente,
   });
@@ -43,12 +45,14 @@ class _TelaRelatorioState extends State<TelaRelatorio> {
   String filtroNome = '';
   List<dynamic> dadosOriginais = [];
   bool carregando = false;
-  DateTime dataSelecionada = DateTime.now();
   int filtroStatusSelecionado = 0;
+
+  DateTime get _dataSelecionada => widget.dataSelecionadaNotifier.value;
 
   @override
   void initState() {
     super.initState();
+    widget.dataSelecionadaNotifier.addListener(_sincronizarDataCompartilhada);
 
     if (dadosOriginais.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) => buscarDados());
@@ -64,8 +68,14 @@ class _TelaRelatorioState extends State<TelaRelatorio> {
     });
   }
 
+  void _sincronizarDataCompartilhada() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
   @override
   void dispose() {
+    widget.dataSelecionadaNotifier.removeListener(_sincronizarDataCompartilhada);
     _scrollController.dispose();
     super.dispose();
   }
@@ -83,15 +93,13 @@ class _TelaRelatorioState extends State<TelaRelatorio> {
   Future<void> _selecionarData(BuildContext context) async {
     final DateTime? colhida = await showDatePicker(
       context: context,
-      initialDate: dataSelecionada,
+      initialDate: _dataSelecionada,
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
     );
     if (colhida != null) {
-      setState(() {
-        dataSelecionada = colhida;
-        carregando = true;
-      });
+      setState(() => carregando = true);
+      widget.dataSelecionadaNotifier.value = colhida;
       await buscarDados();
     }
   }
@@ -102,7 +110,7 @@ class _TelaRelatorioState extends State<TelaRelatorio> {
 
     try {
       final dados = await OperacoesDoDiaService.buscar(
-        dataSelecionada,
+        _dataSelecionada,
         sessao: widget.sessao,
       );
       if (!mounted) return;
@@ -242,7 +250,7 @@ class _TelaRelatorioState extends State<TelaRelatorio> {
                 const Icon(Icons.calendar_month_outlined, size: 16, color: _opsPrimary),
                 const SizedBox(width: 8),
                 Text(
-                  DateFormat('dd/MM/yyyy').format(dataSelecionada),
+                  DateFormat('dd/MM/yyyy').format(_dataSelecionada),
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,

@@ -63,7 +63,7 @@ class _TelaTitulosVencidosState extends State<TelaTitulosVencidos> {
       final response = await http
           .get(
             Uri.parse(
-              'http://177.69.57.196:8083/api/App/titulosvencidos?cnpj=${widget.cnpjCedente}',
+              'https://athenaapp.athenabanco.com.br/api/App/titulosvencidos?cnpj=${widget.cnpjCedente}',
             ),
           )
           .timeout(const Duration(seconds: 20));

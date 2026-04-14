@@ -89,6 +89,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final ValueNotifier<DateTime> _dataOperacoesDoDiaSelecionada =
+      ValueNotifier(DateTime.now());
   late AuthSession _sessaoAtual;
   int _selectedIndex = 0;
   int _indiceAnteriorAntesDaAnalise = 0;
@@ -100,12 +102,17 @@ class _MainPageState extends State<MainPage> {
   List<Map<String, dynamic>> _listaSugestoesCedentes = [];
   bool _carregandoBase = false;
   DateTime? _ultimoToqueVoltar;
-
   @override
   void initState() {
     super.initState();
     _sessaoAtual = widget.sessao;
     _carregarDados();
+  }
+
+  @override
+  void dispose() {
+    _dataOperacoesDoDiaSelecionada.dispose();
+    super.dispose();
   }
 
   String _normalizarCnpj(dynamic valor) {
@@ -121,13 +128,13 @@ class _MainPageState extends State<MainPage> {
         http
             .get(
               Uri.parse(
-                'http://177.69.57.196:8083/api/Dash/AnaliticoPaginado?pagina=1&tamanho=1000',
+                'https://athenaapp.athenabanco.com.br/api/Dash/AnaliticoPaginado?pagina=1&tamanho=1000',
               ),
             )
             .timeout(const Duration(seconds: 15)),
         http
             .get(
-              Uri.parse('http://177.69.57.196:8083/api/Dash/ListaCedentes'),
+              Uri.parse('https://athenaapp.athenabanco.com.br/api/Dash/ListaCedentes'),
             )
             .timeout(const Duration(seconds: 15)),
       ]);
@@ -297,6 +304,7 @@ class _MainPageState extends State<MainPage> {
       context,
       MaterialPageRoute(
         builder: (context) => RelatorioExecutivoPage(
+          dataSelecionadaNotifier: _dataOperacoesDoDiaSelecionada,
           sessao: _sessaoAtual,
           aoTrocarPerfil:
               _sessaoAtual.possuiMultiplosContextos ? _abrirTrocaPerfil : null,
@@ -387,6 +395,7 @@ class _MainPageState extends State<MainPage> {
         key: ValueKey('relatorio-${_sessaoAtual.contextoSelecionadoId ?? 'padrao'}'),
         nome: _sessaoAtual.nomeContextoSelecionado,
         sessao: _sessaoAtual,
+        dataSelecionadaNotifier: _dataOperacoesDoDiaSelecionada,
         aoTrocarPerfil:
             _sessaoAtual.possuiMultiplosContextos ? _abrirTrocaPerfil : null,
         aoSelecionarCedente: _irParaAnalise,

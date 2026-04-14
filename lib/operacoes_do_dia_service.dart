@@ -14,10 +14,10 @@ class OperacoesDoDiaService {
     required AuthSession sessao,
   }) async {
     final urlOperacoes = Uri.parse(
-      'http://177.69.57.196:8083/api/App/operdia?data=${_formatarDataAPI(data)}',
+      'https://athenaapp.athenabanco.com.br/api/App/operdia?data=${_formatarDataAPI(data)}',
     );
     final urlCedentes = Uri.parse(
-      'http://177.69.57.196:8083/api/Dash/ListaCedentes',
+      'https://athenaapp.athenabanco.com.br/api/Dash/ListaCedentes',
     );
 
     final respostas = await Future.wait([

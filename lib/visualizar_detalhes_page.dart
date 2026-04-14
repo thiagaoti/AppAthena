@@ -48,7 +48,7 @@ class _VisualizarDetalhesPageState extends State<VisualizarDetalhesPage> {
     try {
       final bordero = widget.operacao['bordero'];
       final empresa = widget.operacao['empresa'];
-      final url = Uri.parse("http://177.69.57.196:8083/api/App/detalheBor?bordero=$bordero&empresa=$empresa");
+      final url = Uri.parse("https://athenaapp.athenabanco.com.br/api/App/detalheBor?bordero=$bordero&empresa=$empresa");
       
       final response = await http.get(url);
       if (response.statusCode == 200) {

@@ -13,13 +13,13 @@ String _fMoeda(double valor) {
 }
 
 class RelatorioExecutivoPage extends StatefulWidget {
-  final DateTime? dataInicial;
+  final ValueNotifier<DateTime> dataSelecionadaNotifier;
   final AuthSession sessao;
   final Future<void> Function()? aoTrocarPerfil;
 
   const RelatorioExecutivoPage({
     super.key,
-    this.dataInicial,
+    required this.dataSelecionadaNotifier,
     required this.sessao,
     this.aoTrocarPerfil,
   });
@@ -29,15 +29,27 @@ class RelatorioExecutivoPage extends StatefulWidget {
 }
 
 class _RelatorioExecutivoPageState extends State<RelatorioExecutivoPage> {
-  late DateTime _dataSelecionada;
   List<Map<String, dynamic>> _dados = const [];
   bool _carregando = false;
+
+  DateTime get _dataSelecionada => widget.dataSelecionadaNotifier.value;
 
   @override
   void initState() {
     super.initState();
-    _dataSelecionada = widget.dataInicial ?? DateTime.now();
+    widget.dataSelecionadaNotifier.addListener(_sincronizarDataCompartilhada);
     WidgetsBinding.instance.addPostFrameCallback((_) => _carregarDados());
+  }
+
+  void _sincronizarDataCompartilhada() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    widget.dataSelecionadaNotifier.removeListener(_sincronizarDataCompartilhada);
+    super.dispose();
   }
 
   Future<void> _carregarDados() async {
@@ -72,7 +84,7 @@ class _RelatorioExecutivoPageState extends State<RelatorioExecutivoPage> {
     );
 
     if (data == null) return;
-    setState(() => _dataSelecionada = data);
+    widget.dataSelecionadaNotifier.value = data;
     await _carregarDados();
   }
 

@@ -87,7 +87,7 @@ class _TelaLoginState extends State<TelaLogin> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://177.69.57.196:8083/api/Usuario/login'),
+        Uri.parse('https://athenaapp.athenabanco.com.br/api/Usuario/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': _email.text.trim(),
@@ -173,7 +173,7 @@ class _TelaLoginState extends State<TelaLogin> {
               try {
                 final response = await http.post(
                   Uri.parse(
-                    'http://177.69.57.196:8083/api/Usuario/esqueci-minha-senha',
+                    'https://athenaapp.athenabanco.com.br/api/Usuario/esqueci-minha-senha',
                   ),
                   headers: {'Content-Type': 'application/json'},
                   body: jsonEncode({'email': email}),
@@ -229,6 +229,11 @@ class _TelaLoginState extends State<TelaLogin> {
                   TextField(
                     controller: emailController,
                     keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.send,
+                    autofillHints: const [AutofillHints.email],
+                    textCapitalization: TextCapitalization.none,
+                    autocorrect: false,
+                    enableSuggestions: false,
                     decoration: const InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(),
@@ -353,6 +358,12 @@ class _TelaLoginState extends State<TelaLogin> {
               const SizedBox(height: 40),
               TextField(
                 controller: _email,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                autofillHints: const [AutofillHints.username, AutofillHints.email],
+                textCapitalization: TextCapitalization.none,
+                autocorrect: false,
+                enableSuggestions: false,
                 decoration: const InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(),
@@ -362,6 +373,10 @@ class _TelaLoginState extends State<TelaLogin> {
               TextField(
                 controller: _senha,
                 obscureText: !_mostrarSenha,
+                textInputAction: TextInputAction.done,
+                autofillHints: const [AutofillHints.password],
+                autocorrect: false,
+                enableSuggestions: false,
                 decoration: InputDecoration(
                   labelText: 'Senha',
                   border: const OutlineInputBorder(),

@@ -58,7 +58,7 @@ class _TelaComissariaVencidosState extends State<TelaComissariaVencidos> {
       final response = await http
           .get(
             Uri.parse(
-              'http://177.69.57.196:8083/api/App/comVenc?cnpj=${widget.cnpjCedente}',
+              'https://athenaapp.athenabanco.com.br/api/App/comVenc?cnpj=${widget.cnpjCedente}',
             ),
           )
           .timeout(const Duration(seconds: 20));

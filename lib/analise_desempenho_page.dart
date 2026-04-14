@@ -124,7 +124,7 @@ class _TelaAnaliseDesempenhoState extends State<TelaAnaliseDesempenho> {
     setState(() => _baixandoLista = true);
     try {
       final response = await http
-          .get(Uri.parse('http://177.69.57.196:8083/api/Dash/ListaCedentes'))
+          .get(Uri.parse('https://athenaapp.athenabanco.com.br/api/Dash/ListaCedentes'))
           .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
@@ -221,7 +221,7 @@ class _TelaAnaliseDesempenhoState extends State<TelaAnaliseDesempenho> {
   }
 
   Future<Map<String, dynamic>> _buscarVisaoCedente(String cnpj) async {
-    final uri = Uri.parse('http://177.69.57.196:8083/api/VisaoCedente/$cnpj');
+    final uri = Uri.parse('https://athenaapp.athenabanco.com.br/api/VisaoCedente/$cnpj');
 
     try {
       final response = await http.get(uri).timeout(const Duration(seconds: 15));

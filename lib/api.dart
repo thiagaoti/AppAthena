@@ -6,7 +6,7 @@ import 'package:athenaapp/dashboard/TotaisModels.dart';
 import 'package:http/http.dart' as http;
 
 class Api {
-  static const String baseUrl = "http://177.69.57.196:8083/api/Dash";
+  static const String baseUrl = "https://athenaapp.athenabanco.com.br/api/Dash";
 
   // 🔥 helper pra tratar JSON do .NET
   static dynamic _extractData(dynamic json) {

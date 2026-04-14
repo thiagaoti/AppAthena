@@ -11,8 +11,7 @@ class DashboardController extends ChangeNotifier {
   double vencidos = 0;
   int qtdCedentes = 0;
   List<Map<String, dynamic>> resumoRamo = [];
-  
-  // Lista vinda da MainPage (Merge das APIs 177 e 172)
+    
   List<Map<String, dynamic>> baseCedentesCompleta = [];
   
   // Lista processada para a UI de Plataformas
@@ -75,8 +74,8 @@ class DashboardController extends ChangeNotifier {
 
     try {
       final resultados = await Future.wait([
-        http.get(Uri.parse('http://177.69.57.196:8083/api/Dash/TotaisGerais')),
-        http.get(Uri.parse('http://177.69.57.196:8083/api/Dash/ResumoPorRamo')),
+        http.get(Uri.parse('https://athenaapp.athenabanco.com.br/api/Dash/TotaisGerais')),
+        http.get(Uri.parse('https://athenaapp.athenabanco.com.br/api/Dash/ResumoPorRamo')),
       ]).timeout(const Duration(seconds: 10));
 
       final resTotais = resultados[0];
