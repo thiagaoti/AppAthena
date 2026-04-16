@@ -1,4 +1,3 @@
-import 'package:athenaapp/analise_desempenho_page.dart';
 import 'package:athenaapp/auth_session.dart';
 import 'package:athenaapp/operacoes_do_dia_service.dart';
 import 'package:flutter/material.dart';
@@ -366,8 +365,7 @@ class _RelatorioExecutivoPageState extends State<RelatorioExecutivoPage> {
                 volumeTotal: resumo.volumeTotal,
                 icone: Icons.business_center_outlined,
                 isDark: isDark,
-                exibirValor: false,
-                onTapItem: _abrirAnaliseCedente,
+                onTapItem: _mostrarOperacoesCedente,
               ),
             ),
           ],
@@ -528,42 +526,22 @@ class _RelatorioExecutivoPageState extends State<RelatorioExecutivoPage> {
     );
   }
 
-  void _abrirAnaliseCedente(_RankingItem item) {
-    if ((item.cnpj ?? '').isEmpty) {
+  void _mostrarOperacoesCedente(_RankingItem item) {
+    final operacoes = _filtrarOperacoesCedente(item);
+    if (operacoes.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Nao foi possivel localizar o CNPJ do cedente.'),
+          content: Text('Nenhuma operacao encontrada para este cedente.'),
           behavior: SnackBarBehavior.floating,
         ),
       );
       return;
     }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => Scaffold(
-          backgroundColor:
-              Theme.of(context).brightness == Brightness.dark
-                  ? const Color(0xFF000000)
-                  : _execBgLight,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: const Text('Análise de Desempenho'),
-          ),
-          body: SafeArea(
-            top: false,
-            child: TelaAnaliseDesempenho(
-              cnpjInicial: item.cnpj,
-              nomeInicial: item.nome,
-              sessao: widget.sessao,
-              listaSugestoes: const [],
-              usarScaffold: false,
-            ),
-          ),
-        ),
-      ),
+    _mostrarDetalhesAgrupados(
+      titulo: item.nome,
+      subtitulo: 'Operacoes do cedente',
+      operacoes: operacoes,
     );
   }
 
@@ -598,6 +576,30 @@ class _RelatorioExecutivoPageState extends State<RelatorioExecutivoPage> {
     return _dados.where((item) {
       final valorItem = (item[campo] ?? '').toString().trim().toUpperCase();
       return valorItem == valor.trim().toUpperCase();
+    }).toList(growable: false);
+  }
+
+  List<Map<String, dynamic>> _filtrarOperacoesCedente(_RankingItem item) {
+    final cnpjAlvo = (item.cnpj ?? '').replaceAll(RegExp(r'[^0-9]'), '');
+    final nomeAlvo = item.nome.trim().toUpperCase();
+
+    return _dados.where((registro) {
+      final cnpjRegistro = (registro['cgc'] ??
+              registro['cnpj'] ??
+              registro['cpfCnpj'] ??
+              registro['documento'] ??
+              '')
+          .toString()
+          .replaceAll(RegExp(r'[^0-9]'), '');
+      if (cnpjAlvo.isNotEmpty && cnpjRegistro == cnpjAlvo) {
+        return true;
+      }
+
+      final nomeRegistro = (registro['cedente'] ?? registro['nome'] ?? '')
+          .toString()
+          .trim()
+          .toUpperCase();
+      return nomeRegistro == nomeAlvo;
     }).toList(growable: false);
   }
 
@@ -863,7 +865,9 @@ class _ResumoExecutivo {
       final empresa = _lerTexto(item, ['empresa'], fallback: 'Sem empresa');
       final plataforma = _lerTexto(item, ['plataforma', 'plat'], fallback: 'Sem plataforma');
       final gerente = _lerTexto(item, ['gerente', 'nome_gerente'], fallback: 'Sem gerente');
-      final cedente = _lerTexto(item, ['cedente', 'nome'], fallback: 'Sem cedente');
+      final cedente = _normalizarNomeCedente(
+        _lerTexto(item, ['cedente', 'nome'], fallback: 'Sem cedente'),
+      );
       final cnpjCedente = _lerTexto(item, ['cnpj', 'cgc']);
       final tipo = _lerTexto(item, ['tp'], fallback: '--');
       final oficializado = _isOficializado(item);
@@ -946,7 +950,7 @@ class _ResumoExecutivo {
     final lista = origem.entries
         .map(
           (entry) => _RankingItem(
-            nome: entry.key,
+            nome: _normalizarNomeCedente(entry.key),
             valor: entry.value.valor,
             quantidade: entry.value.quantidade,
             cnpj: entry.value.cnpj,
@@ -976,6 +980,10 @@ class _ResumoExecutivo {
       if (valor.isNotEmpty) return valor;
     }
     return fallback;
+  }
+
+  static String _normalizarNomeCedente(String valor) {
+    return valor.trim().replaceAll(RegExp(r'\s+'), ' ');
   }
 
   static bool _isOficializado(Map<String, dynamic> item) {

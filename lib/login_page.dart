@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:athenaapp/auth_session.dart';
 import 'package:athenaapp/context_selector.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -36,12 +37,14 @@ class _TelaLoginState extends State<TelaLogin> {
   @override
   void initState() {
     super.initState();
+    if (kIsWeb) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _verificarSePodeUsarBiometria();
     });
   }
 
   Future<void> _verificarSePodeUsarBiometria() async {
+    if (kIsWeb) return;
     final biometriaAtiva =
         await _storage.read(key: _chaveBiometriaAtiva) == 'true';
     final emailSalvo = await _storage.read(key: _chaveEmail);
@@ -54,6 +57,7 @@ class _TelaLoginState extends State<TelaLogin> {
   }
 
   Future<void> _loginComDigital() async {
+    if (kIsWeb) return;
     try {
       final podeAutenticar =
           await _auth.canCheckBiometrics || await _auth.isDeviceSupported();
@@ -121,8 +125,10 @@ class _TelaLoginState extends State<TelaLogin> {
       }
 
       final biometriaConfigurada =
-          await _storage.read(key: _chaveBiometriaConfigurada) == 'true';
-      if (!biometriaConfigurada) {
+          kIsWeb
+              ? true
+              : await _storage.read(key: _chaveBiometriaConfigurada) == 'true';
+      if (!kIsWeb && !biometriaConfigurada) {
         _perguntarSobreBiometria(_email.text.trim(), _senha.text, sessao);
         return;
       }
@@ -426,6 +432,7 @@ class _TelaLoginState extends State<TelaLogin> {
                 ),
               ),
               if (_temBiometriaSalva) ...[
+                if (!kIsWeb) ...[
                 const SizedBox(height: 20),
                 IconButton(
                   icon: const Icon(
@@ -435,6 +442,7 @@ class _TelaLoginState extends State<TelaLogin> {
                   ),
                   onPressed: _loginComDigital,
                 ),
+                ],
               ],
             ],
           ),

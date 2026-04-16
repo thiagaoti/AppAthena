@@ -1025,14 +1025,16 @@ class _TelaTitulosVencidosState extends State<TelaTitulosVencidos> {
             ),
           ),
           const SizedBox(height: 2),
-          Text(
-            valor,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w800,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              valor,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
         ],
@@ -1113,15 +1115,20 @@ class _TelaTitulosVencidosState extends State<TelaTitulosVencidos> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Column(
+                  Flexible(
+                    child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
-                        _moeda(valorTotal),
-                        style: const TextStyle(
-                          color: _titPrimary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w900,
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          _moeda(valorTotal),
+                          style: const TextStyle(
+                            color: _titPrimary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -1149,6 +1156,7 @@ class _TelaTitulosVencidosState extends State<TelaTitulosVencidos> {
                         ),
                       ),
                     ],
+                  ),
                   ),
                   const SizedBox(width: 8),
                   Icon(
@@ -1318,15 +1326,20 @@ class _TelaTitulosVencidosState extends State<TelaTitulosVencidos> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Column(
+                  Flexible(
+                    child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
-                        _moeda(valorTotal),
-                        style: const TextStyle(
-                          color: _titPrimary,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          _moeda(valorTotal),
+                          style: const TextStyle(
+                            color: _titPrimary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -1349,6 +1362,7 @@ class _TelaTitulosVencidosState extends State<TelaTitulosVencidos> {
                         ),
                       ),
                     ],
+                  ),
                   ),
                   const SizedBox(width: 8),
                   Icon(
@@ -1470,13 +1484,17 @@ class _TelaTitulosVencidosState extends State<TelaTitulosVencidos> {
               ),
               Expanded(
                 flex: 2,
-                child: Text(
-                  _moeda(_asDouble(item['valorTitulo'])),
-                  textAlign: TextAlign.end,
-                  style: const TextStyle(
-                    color: _titPrimary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    _moeda(_asDouble(item['valorTitulo'])),
+                    textAlign: TextAlign.end,
+                    style: const TextStyle(
+                      color: _titPrimary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ),
